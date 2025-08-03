@@ -1,9 +1,10 @@
 import SwiftUI
 
-// 天気の種類を定義するEnum
+/// 天気の種類、アイコン名、ラベルを管理するEnum
 enum WeatherType: CaseIterable {
     case sunny, cloudy, lightRain, heavyRain
 
+    /// 天気アイコンのシステムイメージ名
     var iconName: String {
         switch self {
         case .sunny: "sun.max.fill"
@@ -13,6 +14,7 @@ enum WeatherType: CaseIterable {
         }
     }
 
+    /// 天気の日本語ラベル
     var label: String {
         switch self {
         case .sunny: "晴れ"
@@ -23,13 +25,14 @@ enum WeatherType: CaseIterable {
     }
 }
 
+/// ホーム画面のビュー
 struct HomeView: View {
-    // 選択されている天気を保持する状態変数
+    /// 選択されている天気を保持する状態変数
     @State private var selectedWeather: WeatherType? = nil
 
     var body: some View {
         ZStack {
-            // 背景
+            // 背景のグラデーション
             LinearGradient(
                 gradient: Gradient(colors: [Color.blue.opacity(0.3), Color.white]),
                 startPoint: .top,
@@ -38,9 +41,9 @@ struct HomeView: View {
             .ignoresSafeArea()
             
             VStack {
-                //----------------- 天気取得ボタンここから -----------------
+                // MARK: - 天気取得ボタン
                 Button(action: {
-                    // TODO: action追加
+                    // TODO: 現在地の天気取得処理を実装
                 }) {
                     HStack {
                         Image(systemName: "location.fill")
@@ -52,15 +55,16 @@ struct HomeView: View {
                     .background(.black.opacity(0.8))
                     .cornerRadius(10)
                 }
-                //----------------- 天気取得ボタンここまで -----------------
                 
                 Spacer()
                 
-                //----------------- 天気カードここから -----------------
+                // MARK: - 天気情報カード
+                // TODO: 実際の天気情報に基づいて表示を切り替える
                 if (false) {
                     Text("天気情報がありません")
                         .foregroundColor(.gray)
                 } else {
+                    // ハードコードされた天気情報の表示
                     VStack {
                         Text("2025/03/02 15:30")
                             .font(.headline)
@@ -92,28 +96,28 @@ struct HomeView: View {
                     .cornerRadius(10)
                     .shadow(color: .black.opacity(0.2), radius: 10, x: 0, y: 5)
                 }
-                //----------------- 天気カードここまで -----------------
                 
                 Spacer()
 
-                //----------------- 天気選択ボタンここから -----------------
+                // MARK: - 天気選択ボタン
                 HStack(spacing: 15) {
+                    // 全ての天気タイプのボタンを動的に生成
                     ForEach(WeatherType.allCases, id: \.self) { weather in
                         WeatherTypeButton(
                             weather: weather,
                             isSelected: self.selectedWeather == weather,
                             action: {
+                                // ボタンタップで選択状態を更新
                                 self.selectedWeather = weather
                             }
                         )
                     }
                 }
                 .padding()
-                //----------------- 天気選択ボタンここまで -----------------
 
-                //----------------- 天気登録ボタンここから -----------------
+                // MARK: - 天気登録ボタン
                 Button(action: {
-                    // TODO: action追加
+                    // TODO: 選択された天気情報を登録する処理を実装
                 }) {
                     HStack {
                         Image(systemName: "plus")
@@ -126,7 +130,6 @@ struct HomeView: View {
                     .cornerRadius(10)
                     .shadow(radius: 4, x: 0, y: 4)
                 }
-                //----------------- 天気登録ボタンここまで -----------------
             }
             .padding()
             
@@ -135,6 +138,7 @@ struct HomeView: View {
     }
 }
 
+/// 天気の種類を選択するためのボタンビュー
 struct WeatherTypeButton: View {
     let weather: WeatherType
     let isSelected: Bool
@@ -143,9 +147,11 @@ struct WeatherTypeButton: View {
     var body: some View {
         Button(action: action) {
             VStack {
+                // 天気アイコン
                 Image(systemName: weather.iconName)
                     .font(.largeTitle)
                     .foregroundColor(Color(red: 224/255, green: 81/255, blue: 139/255))
+                // 天気ラベル
                 Text(weather.label)
                     .font(.caption)
                     .foregroundColor(.black)
@@ -154,6 +160,7 @@ struct WeatherTypeButton: View {
             .frame(width: 70, height: 70)
             .background(Color.white)
             .cornerRadius(10)
+            // 選択状態に応じて枠線を表示
             .overlay(
                 RoundedRectangle(cornerRadius: 10)
                     .stroke(isSelected ? Color(red: 224/255, green: 81/255, blue: 139/255) : Color.clear, lineWidth: 3)
