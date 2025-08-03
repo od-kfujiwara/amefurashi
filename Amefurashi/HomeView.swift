@@ -53,43 +53,24 @@ struct HomeView: View {
 
                     Spacer()
                     
-                    //----------------- 天気カードここから -----------------
-                    if (false) {
-                        Text("天気情報がありません")
-                            .foregroundColor(.gray)
-                    } else {
-                        VStack {
-                            Text("2025/03/02 15:30")
-                                .font(.headline)
-                                .foregroundColor(.gray)
-                            
-                            AsyncImage(url: URL(string: "https://openweathermap.org/img/wn/02d@2x.png")) { image in
-                                image
-                                    .resizable()
-                                    .frame(width: 120, height: 120)
-                            } placeholder: {
-                                ProgressView()
-                                    .progressViewStyle(DefaultProgressViewStyle())
-                                    .frame(width: 120, height: 120)
-                                    .cornerRadius(10)
-                            }
-                            Text("20°C")
-                                .font(.system(size: 50))
-                                .fontWeight(.heavy)
+                    // MARK: - 雨の日割合表示
+                    ZStack {
+                        Image(systemName: "cloud.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 300, height: 300)
+                            .foregroundColor(.gray.opacity(0.3))
+                            .offset(y: -20) // 雲のアイコンのみ10ポイント上に移動
+                        
+                        HStack(alignment: .lastTextBaseline, spacing: 0) {
+                            Text("75") // 数字部分
+                                .font(.system(size: 60, weight: .bold))
                                 .foregroundColor(.black)
-                            Text("東京都")
-                                .font(.title3)
-                                .foregroundColor(.gray)
-                            Text("風速: 1.5m/s")
-                                .font(.headline)
-                                .foregroundColor(.gray)
+                            Text("%") // %記号部分
+                                .font(.system(size: 30, weight: .bold))
+                                .foregroundColor(.black)
                         }
-                        .padding(30)
-                        .background(.white)
-                        .cornerRadius(10)
-                        .shadow(color: .black.opacity(0.2), radius: 10, x: 0, y: 5)
                     }
-                    //----------------- 天気カードここまで -----------------
                     
                     Spacer()
 
