@@ -41,22 +41,16 @@ struct HomeView: View {
                 .ignoresSafeArea()
                 
                 VStack {
-                    //----------------- 天気取得ボタンここから -----------------
-                    Button(action: {
-                        // TODO: action追加
-                    }) {
-                        HStack {
-                            Image(systemName: "location.fill")
-                            Text("現在地の天気を取得")
-                                .font(.headline)
-                        }
-                        .foregroundStyle(.white)
-                        .padding()
-                        .background(.black.opacity(0.8))
-                        .cornerRadius(10)
+                    // MARK: - ユーザー名表示
+                    HStack {
+                        Text("風太郎") // 仮のユーザー名
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                            .foregroundColor(.black)
+                        Spacer()
                     }
-                    //----------------- 天気取得ボタンここまで -----------------
-                    
+                    .padding(.horizontal)
+
                     Spacer()
                     
                     //----------------- 天気カードここから -----------------
@@ -180,7 +174,5 @@ struct WeatherTypeButton: View {
 }
 
 #Preview {
-    NavigationView {
-        HomeView()
-    }
+    HomeView()
 }
