@@ -1,6 +1,32 @@
 import SwiftUI
 
+// 天気の種類を定義するEnum
+enum WeatherType: CaseIterable {
+    case sunny, cloudy, lightRain, heavyRain
+
+    var iconName: String {
+        switch self {
+        case .sunny: "sun.max.fill"
+        case .cloudy: "cloud.fill"
+        case .lightRain: "cloud.drizzle.fill"
+        case .heavyRain: "cloud.heavyrain.fill"
+        }
+    }
+
+    var label: String {
+        switch self {
+        case .sunny: "晴れ"
+        case .cloudy: "曇り"
+        case .lightRain: "小雨"
+        case .heavyRain: "大雨"
+        }
+    }
+}
+
 struct HomeView: View {
+    // 選択されている天気を保持する状態変数
+    @State private var selectedWeather: WeatherType? = nil
+
     var body: some View {
         ZStack {
             // 背景
@@ -69,10 +95,70 @@ struct HomeView: View {
                 //----------------- 天気カードここまで -----------------
                 
                 Spacer()
+
+                //----------------- 天気選択ボタンここから -----------------
+                HStack(spacing: 15) {
+                    ForEach(WeatherType.allCases, id: \.self) { weather in
+                        WeatherTypeButton(
+                            weather: weather,
+                            isSelected: self.selectedWeather == weather,
+                            action: {
+                                self.selectedWeather = weather
+                            }
+                        )
+                    }
+                }
+                .padding()
+                //----------------- 天気選択ボタンここまで -----------------
+
+                //----------------- 天気登録ボタンここから -----------------
+                Button(action: {
+                    // TODO: action追加
+                }) {
+                    HStack {
+                        Image(systemName: "plus")
+                        Text("天気を登録する")
+                    }
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .padding()
+                    .background(Color(red: 224/255, green: 81/255, blue: 139/255))
+                    .cornerRadius(10)
+                    .shadow(radius: 4, x: 0, y: 4)
+                }
+                //----------------- 天気登録ボタンここまで -----------------
             }
             .padding()
             
 //        TODO: カードをスクロールできるようにする
+        }
+    }
+}
+
+struct WeatherTypeButton: View {
+    let weather: WeatherType
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack {
+                Image(systemName: weather.iconName)
+                    .font(.largeTitle)
+                    .foregroundColor(Color(red: 224/255, green: 81/255, blue: 139/255))
+                Text(weather.label)
+                    .font(.caption)
+                    .foregroundColor(.black)
+            }
+            .padding()
+            .frame(width: 70, height: 70)
+            .background(Color.white)
+            .cornerRadius(10)
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(isSelected ? Color(red: 224/255, green: 81/255, blue: 139/255) : Color.clear, lineWidth: 3)
+            )
+            .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
         }
     }
 }
