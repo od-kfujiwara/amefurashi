@@ -12,7 +12,7 @@ struct ContentView: View {
             .ignoresSafeArea()
             
             VStack {
-                // 天気取得ボタン
+                //----------------- 天気取得ボタンここから -----------------
                 Button(action: {
                     // TODO: action追加
                 }) {
@@ -26,10 +26,11 @@ struct ContentView: View {
                     .background(.black.opacity(0.8))
                     .cornerRadius(10)
                 }
+                //----------------- 天気取得ボタンここまで -----------------
                 
                 Spacer()
                 
-                // 天気カード
+                //----------------- 天気カードここから -----------------
                 if (false) {
                     Text("天気情報がありません")
                         .foregroundColor(.gray)
@@ -65,6 +66,7 @@ struct ContentView: View {
                     .cornerRadius(10)
                     .shadow(color: .black.opacity(0.2), radius: 10, x: 0, y: 5)
                 }
+                //----------------- 天気カードここまで -----------------
                 
                 Spacer()
             }
