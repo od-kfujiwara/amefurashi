@@ -71,6 +71,7 @@ struct HomeView: View {
                                 .foregroundColor(.black)
                         }
                     }
+                    .offset(y: -40)
                     
                     Spacer()
 
@@ -89,6 +90,7 @@ struct HomeView: View {
                         }
                     }
                     .padding()
+                    .offset(y: -30) // 天気選択ボタンを30ポイント上に移動
 
                     // MARK: - 天気登録ボタン
                     Button(action: {
@@ -104,6 +106,7 @@ struct HomeView: View {
                         .cornerRadius(10)
                         .shadow(radius: 4, x: 0, y: 4)
                     }
+                    .offset(y: -30) // 天気登録ボタンを30ポイント上に移動
                 } 
                 .padding()
             }
