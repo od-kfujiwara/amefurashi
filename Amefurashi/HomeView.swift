@@ -25,117 +25,105 @@ enum WeatherType: CaseIterable {
     }
 }
 
-/// ホーム画面のビュー
 struct HomeView: View {
     /// 選択されている天気を保持する状態変数
     @State private var selectedWeather: WeatherType? = nil
 
     var body: some View {
-        ZStack {
-            // 背景のグラデーション
-            LinearGradient(
-                gradient: Gradient(colors: [Color.blue.opacity(0.3), Color.white]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
-            
-            VStack {
-                // MARK: - 天気取得ボタン
-                Button(action: {
-                    // TODO: 現在地の天気取得処理を実装
-                }) {
+        NavigationView { // NavigationViewで全体を囲む
+            ZStack {
+                // 背景
+                LinearGradient(
+                    gradient: Gradient(colors: [Color.blue.opacity(0.3), Color.white]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .ignoresSafeArea()
+                
+                VStack {
+                    // MARK: - ユーザー名表示
                     HStack {
-                        Image(systemName: "location.fill")
-                        Text("現在地の天気を取得")
-                            .font(.headline)
-                    }
-                    .foregroundStyle(.white)
-                    .padding()
-                    .background(.black.opacity(0.8))
-                    .cornerRadius(10)
-                }
-                
-                Spacer()
-                
-                // MARK: - 天気情報カード
-                // TODO: 実際の天気情報に基づいて表示を切り替える
-                if (false) {
-                    Text("天気情報がありません")
-                        .foregroundColor(.gray)
-                } else {
-                    // ハードコードされた天気情報の表示
-                    VStack {
-                        Text("2025/03/02 15:30")
-                            .font(.headline)
-                            .foregroundColor(.gray)
-                        
-                        AsyncImage(url: URL(string: "https://openweathermap.org/img/wn/02d@2x.png")) { image in
-                            image
-                                .resizable()
-                                .frame(width: 120, height: 120)
-                        } placeholder: {
-                            ProgressView()
-                                .progressViewStyle(DefaultProgressViewStyle())
-                                .frame(width: 120, height: 120)
-                                .cornerRadius(10)
-                        }
-                        Text("20°C")
-                            .font(.system(size: 50))
-                            .fontWeight(.heavy)
+                        Text("風太郎") // 仮のユーザー名
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
                             .foregroundColor(.black)
-                        Text("東京都")
-                            .font(.title3)
-                            .foregroundColor(.gray)
-                        Text("風速: 1.5m/s")
-                            .font(.headline)
-                            .foregroundColor(.gray)
+                        Spacer()
                     }
-                    .padding(30)
-                    .background(.white)
-                    .cornerRadius(10)
-                    .shadow(color: .black.opacity(0.2), radius: 10, x: 0, y: 5)
-                }
-                
-                Spacer()
+                    .padding(.horizontal)
 
-                // MARK: - 天気選択ボタン
-                HStack(spacing: 15) {
-                    // 全ての天気タイプのボタンを動的に生成
-                    ForEach(WeatherType.allCases, id: \.self) { weather in
-                        WeatherTypeButton(
-                            weather: weather,
-                            isSelected: self.selectedWeather == weather,
-                            action: {
-                                // ボタンタップで選択状態を更新
-                                self.selectedWeather = weather
-                            }
-                        )
+                    Spacer()
+                    
+                    // MARK: - 雨の日割合表示
+                    ZStack {
+                        Image("cloud")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 400, height: 400)
+                            .offset(y: -20) // 雲のアイコンのみ10ポイント上に移動
+                        
+                        HStack(alignment: .lastTextBaseline, spacing: 0) {
+                            Text("75") // 数字部分
+                                .font(.system(size: 60, weight: .bold))
+                                .foregroundColor(.black)
+                            Text("%") // %記号部分
+                                .font(.system(size: 30, weight: .bold))
+                                .foregroundColor(.black)
+                        }
+                        .offset(x: +12)
                     }
-                }
-                .padding()
+                    .offset(y: -40)
+                    
+                    Spacer()
 
-                // MARK: - 天気登録ボタン
-                Button(action: {
-                    // TODO: 選択された天気情報を登録する処理を実装
-                }) {
-                    HStack {
-                        Image(systemName: "plus")
-                        Text("天気を登録する")
+                    // MARK: - 天気選択ボタン
+                    HStack(spacing: 15) {
+                        // 全ての天気タイプのボタンを動的に生成
+                        ForEach(WeatherType.allCases, id: \.self) { weather in
+                            WeatherTypeButton(
+                                weather: weather,
+                                isSelected: self.selectedWeather == weather,
+                                action: {
+                                    // ボタンタップで選択状態を更新
+                                    self.selectedWeather = weather
+                                }
+                            )
+                        }
                     }
-                    .font(.headline)
-                    .foregroundColor(.white)
                     .padding()
-                    .background(Color(red: 224/255, green: 81/255, blue: 139/255))
-                    .cornerRadius(10)
-                    .shadow(radius: 4, x: 0, y: 4)
+                    .offset(y: -30) // 天気選択ボタンを30ポイント上に移動
+
+                    // MARK: - 天気登録ボタン
+                    Button(action: {
+                        // アクションは未実装
+                    }) {
+                        HStack {
+                            Image(systemName: "plus")
+                            Text("天気を登録する")
+                        }
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .padding()
+                        .background(Color(red: 224/255, green: 81/255, blue: 139/255))
+                        .cornerRadius(10)
+                        .shadow(radius: 4, x: 0, y: 4)
+                    }
+                    .offset(y: -30) // 天気登録ボタンを30ポイント上に移動
+                } 
+                .padding()
+            }
+            .navigationTitle("ホーム") // ナビゲーションバーのタイトル
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        // TODO: ハンバーガーメニューのアクション
+                    }) {
+                        Image(systemName: "line.horizontal.3")
+                    }
                 }
             }
-            .padding()
-            
-//        TODO: カードをスクロールできるようにする
         }
-    }
+    }   
 }
 
 /// 天気の種類を選択するためのボタンビュー
