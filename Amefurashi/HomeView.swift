@@ -55,11 +55,10 @@ struct HomeView: View {
                     
                     // MARK: - 雨の日割合表示
                     ZStack {
-                        Image(systemName: "cloud.fill")
+                        Image("cloud")
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 300, height: 300)
-                            .foregroundColor(.gray.opacity(0.3))
+                            .frame(width: 400, height: 400)
                             .offset(y: -20) // 雲のアイコンのみ10ポイント上に移動
                         
                         HStack(alignment: .lastTextBaseline, spacing: 0) {
@@ -70,6 +69,7 @@ struct HomeView: View {
                                 .font(.system(size: 30, weight: .bold))
                                 .foregroundColor(.black)
                         }
+                        .offset(x: +12)
                     }
                     .offset(y: -40)
                     
@@ -94,6 +94,7 @@ struct HomeView: View {
 
                     // MARK: - 天気登録ボタン
                     Button(action: {
+                        // アクションは未実装
                     }) {
                         HStack {
                             Image(systemName: "plus")
