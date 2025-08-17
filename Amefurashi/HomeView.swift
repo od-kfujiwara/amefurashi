@@ -28,6 +28,17 @@ enum WeatherType: CaseIterable {
 struct HomeView: View {
     /// 選択されている天気を保持する状態変数
     @State private var selectedWeather: WeatherType? = nil
+    @State private var currentDate = Date()
+    @StateObject private var userSettings = UserSettings()
+    @State private var isEditingUsername = false
+    @FocusState private var isUsernameFocused: Bool
+
+    private var dateFormatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "YYYY年M月d日(E)"
+        formatter.locale = Locale(identifier: "ja_JP")
+        return formatter
+    }
 
     var body: some View {
         NavigationView { // NavigationViewで全体を囲む
@@ -43,10 +54,32 @@ struct HomeView: View {
                 VStack {
                     // MARK: - ユーザー名表示
                     HStack {
-                        Text("風太郎") // 仮のユーザー名
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
-                            .foregroundColor(.black)
+                        if isEditingUsername {
+                            TextField("ユーザー名", text: $userSettings.username)
+                                .font(.largeTitle)
+                                .fontWeight(.bold)
+                                .foregroundColor(.black)
+                                .multilineTextAlignment(.leading)
+                                .focused($isUsernameFocused)
+                                .onSubmit {
+                                    isEditingUsername = false
+                                }
+                        } else {
+                            Text(userSettings.username)
+                                .font(.largeTitle)
+                                .fontWeight(.bold)
+                                .foregroundColor(.black)
+                        }
+                        Button(action: {
+                            isEditingUsername.toggle()
+                            if isEditingUsername {
+                                isUsernameFocused = true
+                            }
+                        }) {
+                            Image(systemName: "square.and.pencil")
+                                .font(.title2)
+                                .foregroundColor(.gray)
+                        }
                         Spacer()
                     }
                     .padding(.horizontal)
@@ -74,6 +107,29 @@ struct HomeView: View {
                     .offset(y: -40)
                     
                     Spacer()
+
+                    // MARK: - 日付選択
+                    HStack {
+                        Button(action: {
+                            self.currentDate = Calendar.current.date(byAdding: .day, value: -1, to: self.currentDate) ?? self.currentDate
+                        }) {
+                            Image(systemName: "chevron.left")
+                        }
+                        .padding(.horizontal)
+
+                        Text(dateFormatter.string(from: currentDate))
+                            .font(.headline)
+
+                        Button(action: {
+                            self.currentDate = Calendar.current.date(byAdding: .day, value: 1, to: self.currentDate) ?? self.currentDate
+                        }) {
+                            Image(systemName: "chevron.right")
+                        }
+                        .disabled(Calendar.current.isDateInToday(currentDate))
+                        .padding(.horizontal)
+                    }
+                    .padding()
+                    .offset(y: -10)
 
                     // MARK: - 天気選択ボタン
                     HStack(spacing: 15) {
