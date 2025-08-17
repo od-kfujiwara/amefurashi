@@ -9,11 +9,11 @@ struct ContentView: View {
                     Text("ホーム")
                 }
             
-            CalendarView()
-                .tabItem {
-                    Image(systemName: "calendar")
-                    Text("カレンダー")
-                }
+            // CalendarView()
+            //     .tabItem {
+            //         Image(systemName: "calendar")
+            //         Text("カレンダー")
+            //     }
         }
     }
 }
