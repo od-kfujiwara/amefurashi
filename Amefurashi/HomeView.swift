@@ -1,33 +1,25 @@
 import SwiftUI
 
-/// 天気の種類、アイコン名、ラベルを管理するEnum
-enum WeatherType: CaseIterable {
-    case sunny, cloudy, lightRain, heavyRain
 
-    /// 天気アイコンのシステムイメージ名
-    var iconName: String {
-        switch self {
-        case .sunny: "sun.max.fill"
-        case .cloudy: "cloud.fill"
-        case .lightRain: "cloud.drizzle.fill"
-        case .heavyRain: "cloud.heavyrain.fill"
-        }
-    }
-
-    /// 天気の日本語ラベル
-    var label: String {
-        switch self {
-        case .sunny: "晴れ"
-        case .cloudy: "曇り"
-        case .lightRain: "小雨"
-        case .heavyRain: "大雨"
-        }
-    }
-}
 
 struct HomeView: View {
     /// 選択されている天気を保持する状態変数
     @State private var selectedWeather: WeatherType? = nil
+    @State private var currentDate = Date()
+    @StateObject private var dailyWeatherStorage = DailyWeatherStorage()
+
+    private var rainyDayPercentage: Int {
+        guard !dailyWeatherStorage.dailyRecords.isEmpty else { return 0 }
+        let rainyDays = dailyWeatherStorage.dailyRecords.filter { $0.weatherType == .lightRain || $0.weatherType == .heavyRain }.count
+        return Int(Double(rainyDays) / Double(dailyWeatherStorage.dailyRecords.count) * 100)
+    }
+
+    private var dateFormatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "YYYY年M月d日(E)"
+        formatter.locale = Locale(identifier: "ja_JP")
+        return formatter
+    }
 
     var body: some View {
         NavigationView { // NavigationViewで全体を囲む
@@ -47,9 +39,16 @@ struct HomeView: View {
                             .font(.largeTitle)
                             .fontWeight(.bold)
                             .foregroundColor(.black)
+                        Button(action: {
+                            // アクションは未実装
+                        }) {
+                            Image(systemName: "square.and.pencil")
+                                .font(.title2)
+                                .foregroundColor(.gray)
+                        }
                         Spacer()
                     }
-                    .padding(.horizontal)
+                    .padding(.horizontal)  
 
                     Spacer()
                     
@@ -62,7 +61,7 @@ struct HomeView: View {
                             .offset(y: -20) // 雲のアイコンのみ10ポイント上に移動
                         
                         HStack(alignment: .lastTextBaseline, spacing: 0) {
-                            Text("75") // 数字部分
+                            Text("\(rainyDayPercentage)") // 数字部分
                                 .font(.system(size: 60, weight: .bold))
                                 .foregroundColor(.black)
                             Text("%") // %記号部分
@@ -74,6 +73,29 @@ struct HomeView: View {
                     .offset(y: -40)
                     
                     Spacer()
+
+                    // MARK: - 日付選択
+                    HStack {
+                        Button(action: {
+                            self.currentDate = Calendar.current.date(byAdding: .day, value: -1, to: self.currentDate) ?? self.currentDate
+                        }) {
+                            Image(systemName: "chevron.left")
+                        }
+                        .padding(.horizontal)
+
+                        Text(dateFormatter.string(from: currentDate))
+                            .font(.headline)
+
+                        Button(action: {
+                            self.currentDate = Calendar.current.date(byAdding: .day, value: 1, to: self.currentDate) ?? self.currentDate
+                        }) {
+                            Image(systemName: "chevron.right")
+                        }
+                        .disabled(Calendar.current.isDateInToday(currentDate))
+                        .padding(.horizontal)
+                    }
+                    .padding()
+                    .offset(y: -10)
 
                     // MARK: - 天気選択ボタン
                     HStack(spacing: 15) {
@@ -94,7 +116,23 @@ struct HomeView: View {
 
                     // MARK: - 天気登録ボタン
                     Button(action: {
-                        // アクションは未実装
+                        guard let selectedWeather = selectedWeather else {
+                            // 天気が選択されていない場合のアラートなど
+                            return
+                        }
+
+                        let calendar = Calendar.current
+                        let today = calendar.startOfDay(for: currentDate)
+
+                        // その日の記録がすでにあるか確認
+                        if dailyWeatherStorage.dailyRecords.contains(where: { calendar.isDate($0.date, inSameDayAs: today) }) {
+                            print("すでに今日の天気を登録済みです")
+                            return
+                        }
+
+                        let newRecord = DailyWeatherRecord(date: today, weatherType: selectedWeather)
+                        dailyWeatherStorage.dailyRecords.append(newRecord)
+                        print("天気登録: \(newRecord)")
                     }) {
                         HStack {
                             Image(systemName: "plus")
@@ -121,6 +159,10 @@ struct HomeView: View {
                         Image(systemName: "line.horizontal.3")
                     }
                 }
+            }
+            .onAppear {
+                // dailyWeatherStorageは@StateObjectなので自動的に初期化される
+                // dailyRecordsはinitでUserDefaultsからロードされる
             }
         }
     }   
