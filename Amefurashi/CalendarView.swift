@@ -98,9 +98,10 @@ struct CalendarView: View {
                 .padding(.bottom, 8)
 
                 // カレンダーグリッド
+                let daysInMonth = getDaysInMonth()
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 2), count: 7), spacing: 2) {
-                    ForEach(getDaysInMonth().indices, id: \.self) { index in
-                        if let date = getDaysInMonth()[index] {
+                    ForEach(daysInMonth.indices, id: \.self) { index in
+                        if let date = daysInMonth[index] {
                             CalendarDayCell(
                                 date: date,
                                 isInCurrentMonth: isInCurrentMonth(date),
