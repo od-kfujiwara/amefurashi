@@ -6,7 +6,7 @@ struct HomeView: View {
     /// 選択されている天気を保持する状態変数
     @State private var selectedWeather: WeatherType? = nil
     @State private var currentDate = Date()
-    @StateObject private var dailyWeatherStorage = DailyWeatherStorage()
+    @EnvironmentObject var dailyWeatherStorage: DailyWeatherStorage
 
     private var rainyDayPercentage: Int {
         guard !dailyWeatherStorage.dailyRecords.isEmpty else { return 0 }
@@ -160,12 +160,8 @@ struct HomeView: View {
                     }
                 }
             }
-            .onAppear {
-                // dailyWeatherStorageは@StateObjectなので自動的に初期化される
-                // dailyRecordsはinitでUserDefaultsからロードされる
-            }
         }
-    }   
+    }
 }
 
 /// 天気の種類を選択するためのボタンビュー
@@ -202,4 +198,5 @@ struct WeatherTypeButton: View {
 
 #Preview {
     HomeView()
+        .environmentObject(DailyWeatherStorage())
 }
