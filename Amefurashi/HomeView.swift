@@ -24,7 +24,6 @@ struct HomeView: View {
     var body: some View {
         NavigationView { // NavigationViewで全体を囲む
             ZStack {
-                // 背景
                 LinearGradient(
                     gradient: Gradient(colors: [Color.blue.opacity(0.3), Color.white]),
                     startPoint: .top,
@@ -35,12 +34,12 @@ struct HomeView: View {
                 VStack {
                     // MARK: - ユーザー名表示
                     HStack {
-                        Text("風太郎") // 仮のユーザー名
+                        Text("風太郎")
                             .font(.largeTitle)
                             .fontWeight(.bold)
                             .foregroundColor(.black)
                         Button(action: {
-                            // アクションは未実装
+                            // TODO: ユーザ名の編集機能実装
                         }) {
                             Image(systemName: "square.and.pencil")
                                 .font(.title2)
@@ -52,19 +51,19 @@ struct HomeView: View {
 
                     Spacer()
                     
-                    // MARK: - 雨の日割合表示
+                    // MARK: - アメフラシ度表示
                     ZStack {
                         Image("cloud")
                             .resizable()
                             .scaledToFit()
                             .frame(width: 400, height: 400)
-                            .offset(y: -20) // 雲のアイコンのみ10ポイント上に移動
+                            .offset(y: -20)
                         
                         HStack(alignment: .lastTextBaseline, spacing: 0) {
-                            Text("\(rainyDayPercentage)") // 数字部分
+                            Text("\(rainyDayPercentage)")
                                 .font(.system(size: 60, weight: .bold))
                                 .foregroundColor(.black)
-                            Text("%") // %記号部分
+                            Text("%")
                                 .font(.system(size: 30, weight: .bold))
                                 .foregroundColor(.black)
                         }
@@ -99,25 +98,22 @@ struct HomeView: View {
 
                     // MARK: - 天気選択ボタン
                     HStack(spacing: 15) {
-                        // 全ての天気タイプのボタンを動的に生成
                         ForEach(WeatherType.allCases, id: \.self) { weather in
                             WeatherTypeButton(
                                 weather: weather,
                                 isSelected: self.selectedWeather == weather,
                                 action: {
-                                    // ボタンタップで選択状態を更新
                                     self.selectedWeather = weather
                                 }
                             )
                         }
                     }
                     .padding()
-                    .offset(y: -30) // 天気選択ボタンを30ポイント上に移動
+                    .offset(y: -30)
 
                     // MARK: - 天気登録ボタン
                     Button(action: {
                         guard let selectedWeather = selectedWeather else {
-                            // 天気が選択されていない場合のアラートなど
                             return
                         }
 
@@ -145,11 +141,11 @@ struct HomeView: View {
                         .cornerRadius(10)
                         .shadow(radius: 4, x: 0, y: 4)
                     }
-                    .offset(y: -30) // 天気登録ボタンを30ポイント上に移動
+                    .offset(y: -30)
                 } 
                 .padding()
             }
-            .navigationTitle("ホーム") // ナビゲーションバーのタイトル
+            .navigationTitle("ホーム")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -186,7 +182,6 @@ struct WeatherTypeButton: View {
             .frame(width: 70, height: 70)
             .background(Color.white)
             .cornerRadius(10)
-            // 選択状態に応じて枠線を表示
             .overlay(
                 RoundedRectangle(cornerRadius: 10)
                     .stroke(isSelected ? Color(red: 224/255, green: 81/255, blue: 139/255) : Color.clear, lineWidth: 3)
