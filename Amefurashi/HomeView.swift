@@ -22,7 +22,7 @@ struct HomeView: View {
     }
 
     var body: some View {
-        NavigationView { // NavigationViewで全体を囲む
+        NavigationStack {
             ZStack {
                 LinearGradient(
                     gradient: Gradient(colors: [Color.blue.opacity(0.3), Color.white]),

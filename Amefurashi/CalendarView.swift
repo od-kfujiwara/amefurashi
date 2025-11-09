@@ -47,7 +47,7 @@ struct CalendarView: View {
     }
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 0) {
                 // 月の選択ヘッダー
                 HStack {
