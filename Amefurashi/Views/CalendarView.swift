@@ -1,8 +1,20 @@
 import SwiftUI
 
+// Date拡張: 未来の日付かどうかを判定
+extension Date {
+    func isFutureDate() -> Bool {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        let targetDay = calendar.startOfDay(for: self)
+        return targetDay > today
+    }
+}
+
 struct CalendarView: View {
     @EnvironmentObject var dailyWeatherStorage: DailyWeatherStorage
     @State private var currentMonth = Date()
+    @Binding var selectedTab: Int
+    @Binding var selectedDate: Date?
 
     private let calendar = Calendar.current
     private let weekdaySymbols = ["日", "月", "火", "水", "木", "金", "土"]
@@ -95,7 +107,13 @@ struct CalendarView: View {
                                 date: date,
                                 isInCurrentMonth: isInCurrentMonth(date),
                                 weatherType: weatherDict[normalizedDate],
-                                isToday: calendar.isDateInToday(date)
+                                isToday: calendar.isDateInToday(date),
+                                onTap: {
+                                    // 今日より先の日付は選択できないようにする
+                                    guard !date.isFutureDate() else { return }
+                                    selectedDate = date
+                                    selectedTab = 0
+                                }
                             )
                         }
                     }
@@ -117,46 +135,60 @@ struct CalendarDayCell: View {
     let isInCurrentMonth: Bool
     let weatherType: WeatherType?
     let isToday: Bool
+    let onTap: () -> Void
 
     private var dayNumber: String {
         DateFormatters.dayNumber.string(from: date)
     }
 
     var body: some View {
-        VStack(spacing: 4) {
-            Text(dayNumber)
-                .font(.caption)
-                .fontWeight(isToday ? .bold : .regular)
-                .foregroundColor(
-                    !isInCurrentMonth ? .gray.opacity(0.3) :
-                    isToday ? .white : .primary
-                )
+        Button(action: onTap) {
+            VStack(spacing: 4) {
+                Text(dayNumber)
+                    .font(.caption)
+                    .fontWeight(isToday ? .bold : .regular)
+                    .foregroundColor(
+                        !isInCurrentMonth ? .gray.opacity(0.3) :
+                        isToday ? .white : .primary
+                    )
 
-            if let weather = weatherType, isInCurrentMonth {
-                Image(systemName: weather.iconName)
-                    .font(.system(size: 20))
-                    .foregroundColor(weather.color)
-            } else {
-                Spacer()
-                    .frame(height: 20)
+                if let weather = weatherType, isInCurrentMonth {
+                    Image(systemName: weather.iconName)
+                        .font(.system(size: 20))
+                        .foregroundColor(weather.color)
+                } else {
+                    Spacer()
+                        .frame(height: 20)
+                }
             }
+            .frame(height: 60)
+            .frame(maxWidth: .infinity)
+            .background(
+                isToday ?
+                    Color(red: 224/255, green: 81/255, blue: 139/255).opacity(0.8) :
+                    Color.white
+            )
+            .cornerRadius(8)
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(isToday ? Color(red: 224/255, green: 81/255, blue: 139/255) : Color.clear, lineWidth: 2)
+            )
         }
-        .frame(height: 60)
-        .frame(maxWidth: .infinity)
-        .background(
-            isToday ?
-                Color(red: 224/255, green: 81/255, blue: 139/255).opacity(0.8) :
-                Color.white
-        )
-        .cornerRadius(8)
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(isToday ? Color(red: 224/255, green: 81/255, blue: 139/255) : Color.clear, lineWidth: 2)
-        )
+        .buttonStyle(CalendarCellButtonStyle())
+    }
+}
+
+// カレンダーセル用のカスタムボタンスタイル
+struct CalendarCellButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
+            .opacity(configuration.isPressed ? 0.7 : 1.0)
+            .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
     }
 }
 
 #Preview {
-    CalendarView()
+    CalendarView(selectedTab: .constant(1), selectedDate: .constant(nil))
         .environmentObject(DailyWeatherStorage())
 }

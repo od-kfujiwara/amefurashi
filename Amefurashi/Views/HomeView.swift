@@ -8,6 +8,7 @@ struct HomeView: View {
     @State private var currentDate = Date()
     @EnvironmentObject var dailyWeatherStorage: DailyWeatherStorage
     @EnvironmentObject var userSettings: UserSettingsStorage
+    @Binding var selectedDateFromCalendar: Date?
 
     // ユーザー名編集用のState
     @State private var showingUsernameSheet = false
@@ -73,24 +74,37 @@ struct HomeView: View {
                     Spacer()
 
                     // MARK: - 日付選択
-                    HStack {
+                    VStack(spacing: 8) {
+                        // 今日ボタン
                         Button(action: {
-                            self.currentDate = Calendar.current.date(byAdding: .day, value: -1, to: self.currentDate) ?? self.currentDate
+                            self.currentDate = Date()
                         }) {
-                            Image(systemName: "chevron.left")
-                        }
-                        .padding(.horizontal)
-
-                        Text(DateFormatters.japaneseFullDate.string(from: currentDate))
-                            .font(.headline)
-
-                        Button(action: {
-                            self.currentDate = Calendar.current.date(byAdding: .day, value: 1, to: self.currentDate) ?? self.currentDate
-                        }) {
-                            Image(systemName: "chevron.right")
+                            Text("今日")
+                                .font(.subheadline)
+                                .foregroundColor(.blue)
                         }
                         .disabled(Calendar.current.isDateInToday(currentDate))
-                        .padding(.horizontal)
+
+                        // 日付選択
+                        HStack {
+                            Button(action: {
+                                self.currentDate = Calendar.current.date(byAdding: .day, value: -1, to: self.currentDate) ?? self.currentDate
+                            }) {
+                                Image(systemName: "chevron.left")
+                            }
+                            .padding(.horizontal)
+
+                            Text(DateFormatters.japaneseFullDate.string(from: currentDate))
+                                .font(.headline)
+
+                            Button(action: {
+                                self.currentDate = Calendar.current.date(byAdding: .day, value: 1, to: self.currentDate) ?? self.currentDate
+                            }) {
+                                Image(systemName: "chevron.right")
+                            }
+                            .disabled(Calendar.current.isDateInToday(currentDate))
+                            .padding(.horizontal)
+                        }
                     }
                     .padding(.vertical, 8)
 
@@ -141,6 +155,12 @@ struct HomeView: View {
             .onChange(of: currentDate) { _, newDate in
                 selectedWeather = dailyWeatherStorage.getWeatherForDate(newDate)
             }
+            .onChange(of: selectedDateFromCalendar) { _, newDate in
+                if let newDate = newDate {
+                    currentDate = newDate
+                    selectedDateFromCalendar = nil
+                }
+            }
             .onAppear {
                 selectedWeather = dailyWeatherStorage.getWeatherForDate(currentDate)
             }
@@ -180,7 +200,7 @@ struct WeatherTypeButton: View {
 }
 
 #Preview {
-    HomeView()
+    HomeView(selectedDateFromCalendar: .constant(nil))
         .environmentObject(DailyWeatherStorage())
         .environmentObject(UserSettingsStorage())
 }
