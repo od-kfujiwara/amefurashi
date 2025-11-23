@@ -23,7 +23,7 @@ struct HomeView: View {
                     endPoint: .bottom
                 )
                 .ignoresSafeArea()
-                
+
                 VStack(spacing: 0) {
                     // MARK: - ユーザー名表示
                     HStack {
@@ -49,32 +49,37 @@ struct HomeView: View {
                         UsernameEditSheet(username: $userSettings.username)
                     }
 
-                    Spacer()
+                    // Spacer()
 
                     // MARK: - アメフラシ度表示
-                    ZStack(alignment: .center) {
-                        Image("cloud")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 350, height: 350)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("あなたのアメフラシ度は...")
+                            .font(.title3)
+                            .offset(y: 40)
+                            .padding(.leading, 10)
 
-                        HStack(alignment: .lastTextBaseline, spacing: 0) {
-                            Text("\(dailyWeatherStorage.rainyDayPercentage)")
-                                .font(.system(size: 60, weight: .bold))
-                                .foregroundColor(.black)
-                            Text("%")
-                                .font(.system(size: 30, weight: .bold))
-                                .foregroundColor(.black)
+                        ZStack(alignment: .center) {
+                            Image("cloud")
+                                .resizable()
+                                .scaledToFit()
+
+                            HStack(alignment: .lastTextBaseline, spacing: 0) {
+                                Text("\(dailyWeatherStorage.rainyDayPercentage)")
+                                    .font(.system(size: 60, weight: .bold))
+                                    .foregroundColor(.black)
+                                Text("%")
+                                    .font(.system(size: 30, weight: .bold))
+                                    .foregroundColor(.black)
+                            }
+                            .padding(.leading, 30)
+                            .offset(y: 10)
                         }
-                        .padding(.leading, 30)
-                        .offset(y: 10)
                     }
-                    .padding(.vertical, 20)
 
-                    Spacer()
+                    // Spacer()
 
                     // MARK: - 日付選択
-                    VStack(spacing: 8) {
+                    VStack {
                         // 今日ボタン
                         Button(action: {
                             self.currentDate = Date()
@@ -146,7 +151,10 @@ struct HomeView: View {
                         .cornerRadius(10)
                         .shadow(radius: 4, x: 0, y: 4)
                     }
-                    .padding(.bottom, 20)
+                    // .padding(.bottom, 20)
+                    .safeAreaInset(edge: .bottom){
+                        Color.clear.frame(height: 10) 
+                    }
                 }
                 .padding(.horizontal)
             }
