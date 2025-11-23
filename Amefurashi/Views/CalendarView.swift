@@ -7,13 +7,6 @@ struct CalendarView: View {
     private let calendar = Calendar.current
     private let weekdaySymbols = ["日", "月", "火", "水", "木", "金", "土"]
 
-    // 月のフォーマッター
-    private var monthFormatter: DateFormatter {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "YYYY年M月"
-        formatter.locale = Locale(identifier: "ja_JP")
-        return formatter
-    }
 
     // 月の日数を取得
     private func getDaysInMonth() -> [Date?] {
@@ -34,12 +27,6 @@ struct CalendarView: View {
         return days
     }
 
-    // 指定した日付の天気記録を取得
-    private func getWeatherForDate(_ date: Date) -> WeatherType? {
-        return dailyWeatherStorage.dailyRecords.first { record in
-            calendar.isDate(record.date, inSameDayAs: date)
-        }?.weatherType
-    }
 
     // 日付が現在の月に属しているかチェック
     private func isInCurrentMonth(_ date: Date) -> Bool {
@@ -63,7 +50,7 @@ struct CalendarView: View {
 
                     Spacer()
 
-                    Text(monthFormatter.string(from: currentMonth))
+                    Text(DateFormatters.japaneseMonthYear.string(from: currentMonth))
                         .font(.title2)
                         .fontWeight(.bold)
 
@@ -99,13 +86,15 @@ struct CalendarView: View {
 
                 // カレンダーグリッド
                 let daysInMonth = getDaysInMonth()
+                let weatherDict = dailyWeatherStorage.weatherDictionary
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 2), count: 7), spacing: 2) {
                     ForEach(daysInMonth.indices, id: \.self) { index in
                         if let date = daysInMonth[index] {
+                            let normalizedDate = calendar.startOfDay(for: date)
                             CalendarDayCell(
                                 date: date,
                                 isInCurrentMonth: isInCurrentMonth(date),
-                                weatherType: getWeatherForDate(date),
+                                weatherType: weatherDict[normalizedDate],
                                 isToday: calendar.isDateInToday(date)
                             )
                         }
@@ -130,9 +119,7 @@ struct CalendarDayCell: View {
     let isToday: Bool
 
     private var dayNumber: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "d"
-        return formatter.string(from: date)
+        DateFormatters.dayNumber.string(from: date)
     }
 
     var body: some View {

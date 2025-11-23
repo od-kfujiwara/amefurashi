@@ -35,7 +35,9 @@ Amefurashi/
 ├── Models/
 │   └── DailyWeatherRecord.swift     # データモデル
 ├── Storage/
-│   └── DailyWeatherStorage.swift    # データ永続化層
+│   └── DailyWeatherStorage.swift    # データ永続化層 + ビジネスロジック
+├── Utilities/
+│   └── DateFormatters.swift         # 日付フォーマット用ユーティリティ
 └── Assets.xcassets/
 ```
 
@@ -65,8 +67,19 @@ Amefurashi/
   - `DailyWeatherRecord` struct: 日付と天気タイプを保持(`Identifiable`, `Codable`)
 
 #### Storage層
-- **Storage/DailyWeatherStorage.swift**: UserDefaultsを使用した永続化クラス(`ObservableObject`)
+- **Storage/DailyWeatherStorage.swift**: UserDefaultsを使用した永続化クラス + ビジネスロジック(`ObservableObject`)
   - `@Published var dailyRecords`の変更を自動的にUserDefaultsに保存
+  - `rainyDayPercentage`: 雨の日の割合を計算
+  - `hasRecordForDate()`: 指定日の記録存在チェック
+  - `addRecordIfNeeded()`: バリデーション付き記録追加
+  - `weatherDictionary`: カレンダー表示用の高速検索辞書（O(1)）
+
+#### Utilities層
+- **Utilities/DateFormatters.swift**: 日付フォーマット用のシングルトンコレクション
+  - `japaneseFullDate`: "YYYY年M月d日(E)"形式
+  - `japaneseMonthYear`: "YYYY年M月"形式
+  - `dayNumber`: "d"形式
+  - パフォーマンス最適化のためDateFormatterを再利用
 
 ### データ永続化の仕組み
 
@@ -81,8 +94,12 @@ Amefurashi/
 
 ## 開発時の注意事項
 
-- **ディレクトリ構造**: ファイルは機能別に整理されています（App/Views/Models/Storage）
+- **ディレクトリ構造**: ファイルは機能別に整理されています（App/Views/Models/Storage/Utilities）
+- **ロジック分離**: ViewはUI表示のみに専念し、ビジネスロジックはStorage層に配置
+- **パフォーマンス最適化**:
+  - DateFormatterはシングルトンパターンで再利用（Utilities/DateFormatters）
+  - カレンダー表示では辞書検索でO(1)のパフォーマンスを実現
 - **画像アセット**: `Assets.xcassets/cloud.png`の画像がアプリにバンドルされていることを確認
 - **日付制約**: `currentDate`は今日以降に進めない実装になっている(`Calendar.current.isDateInToday(currentDate)`でチェック)
-- **重複登録防止**: 同じ日に複数回登録できないようチェックが入っている
+- **重複登録防止**: `DailyWeatherStorage.addRecordIfNeeded()`でバリデーション
 - **雨の日の計算**: 小雨(`lightRain`)と大雨(`heavyRain`)の両方を雨の日としてカウント

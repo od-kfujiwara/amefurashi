@@ -8,18 +8,6 @@ struct HomeView: View {
     @State private var currentDate = Date()
     @EnvironmentObject var dailyWeatherStorage: DailyWeatherStorage
 
-    private var rainyDayPercentage: Int {
-        guard !dailyWeatherStorage.dailyRecords.isEmpty else { return 0 }
-        let rainyDays = dailyWeatherStorage.dailyRecords.filter { $0.weatherType == .lightRain || $0.weatherType == .heavyRain }.count
-        return Int(Double(rainyDays) / Double(dailyWeatherStorage.dailyRecords.count) * 100)
-    }
-
-    private var dateFormatter: DateFormatter {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "YYYY年M月d日(E)"
-        formatter.locale = Locale(identifier: "ja_JP")
-        return formatter
-    }
 
     var body: some View {
         NavigationStack {
@@ -60,7 +48,7 @@ struct HomeView: View {
                             .offset(y: -20)
                         
                         HStack(alignment: .lastTextBaseline, spacing: 0) {
-                            Text("\(rainyDayPercentage)")
+                            Text("\(dailyWeatherStorage.rainyDayPercentage)")
                                 .font(.system(size: 60, weight: .bold))
                                 .foregroundColor(.black)
                             Text("%")
@@ -82,7 +70,7 @@ struct HomeView: View {
                         }
                         .padding(.horizontal)
 
-                        Text(dateFormatter.string(from: currentDate))
+                        Text(DateFormatters.japaneseFullDate.string(from: currentDate))
                             .font(.headline)
 
                         Button(action: {
@@ -119,16 +107,11 @@ struct HomeView: View {
 
                         let calendar = Calendar.current
                         let today = calendar.startOfDay(for: currentDate)
-
-                        // その日の記録がすでにあるか確認
-                        if dailyWeatherStorage.dailyRecords.contains(where: { calendar.isDate($0.date, inSameDayAs: today) }) {
-                            print("すでに今日の天気を登録済みです")
-                            return
-                        }
-
                         let newRecord = DailyWeatherRecord(date: today, weatherType: selectedWeather)
-                        dailyWeatherStorage.dailyRecords.append(newRecord)
-                        print("天気登録: \(newRecord)")
+
+                        if dailyWeatherStorage.addRecordIfNeeded(newRecord) {
+                            print("天気登録: \(newRecord)")
+                        }
                     }) {
                         HStack {
                             Image(systemName: "plus")
