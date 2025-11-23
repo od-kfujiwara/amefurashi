@@ -7,6 +7,10 @@ struct HomeView: View {
     @State private var selectedWeather: WeatherType? = nil
     @State private var currentDate = Date()
     @EnvironmentObject var dailyWeatherStorage: DailyWeatherStorage
+    @EnvironmentObject var userSettings: UserSettingsStorage
+
+    // ユーザー名編集用のState
+    @State private var showingUsernameSheet = false
 
 
     var body: some View {
@@ -19,34 +23,40 @@ struct HomeView: View {
                 )
                 .ignoresSafeArea()
                 
-                VStack {
+                VStack(spacing: 0) {
                     // MARK: - ユーザー名表示
                     HStack {
-                        Text("風太郎")
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
-                            .foregroundColor(.black)
                         Button(action: {
-                            // TODO: ユーザ名の編集機能実装
+                            showingUsernameSheet = true
                         }) {
-                            Image(systemName: "square.and.pencil")
-                                .font(.title2)
-                                .foregroundColor(.gray)
+                            HStack {
+                                Text(userSettings.username)
+                                    .font(.largeTitle)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.black)
+                                Image(systemName: "square.and.pencil")
+                                    .font(.title2)
+                                    .foregroundColor(.gray)
+                            }
                         }
+                        .buttonStyle(PlainButtonStyle())
                         Spacer()
                     }
-                    .padding(.horizontal)  
+                    .padding(.horizontal)
+                    .padding(.top, 8)
+                    .sheet(isPresented: $showingUsernameSheet) {
+                        UsernameEditSheet(username: $userSettings.username)
+                    }
 
                     Spacer()
-                    
+
                     // MARK: - アメフラシ度表示
-                    ZStack {
+                    ZStack(alignment: .center) {
                         Image("cloud")
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 400, height: 400)
-                            .offset(y: -20)
-                        
+                            .frame(width: 350, height: 350)
+
                         HStack(alignment: .lastTextBaseline, spacing: 0) {
                             Text("\(dailyWeatherStorage.rainyDayPercentage)")
                                 .font(.system(size: 60, weight: .bold))
@@ -55,10 +65,9 @@ struct HomeView: View {
                                 .font(.system(size: 30, weight: .bold))
                                 .foregroundColor(.black)
                         }
-                        .offset(x: +12)
                     }
-                    .offset(y: -40)
-                    
+                    .padding(.vertical, 20)
+
                     Spacer()
 
                     // MARK: - 日付選択
@@ -81,8 +90,7 @@ struct HomeView: View {
                         .disabled(Calendar.current.isDateInToday(currentDate))
                         .padding(.horizontal)
                     }
-                    .padding()
-                    .offset(y: -10)
+                    .padding(.vertical, 8)
 
                     // MARK: - 天気選択ボタン
                     HStack(spacing: 15) {
@@ -96,8 +104,7 @@ struct HomeView: View {
                             )
                         }
                     }
-                    .padding()
-                    .offset(y: -30)
+                    .padding(.vertical, 16)
 
                     // MARK: - 天気登録ボタン
                     Button(action: {
@@ -124,9 +131,9 @@ struct HomeView: View {
                         .cornerRadius(10)
                         .shadow(radius: 4, x: 0, y: 4)
                     }
-                    .offset(y: -30)
-                } 
-                .padding()
+                    .padding(.bottom, 20)
+                }
+                .padding(.horizontal)
             }
             .navigationTitle("ホーム")
             .navigationBarTitleDisplayMode(.inline)
@@ -177,4 +184,5 @@ struct WeatherTypeButton: View {
 #Preview {
     HomeView()
         .environmentObject(DailyWeatherStorage())
+        .environmentObject(UserSettingsStorage())
 }

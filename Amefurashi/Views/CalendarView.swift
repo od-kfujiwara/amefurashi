@@ -36,7 +36,7 @@ struct CalendarView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // 月の選択ヘッダー
+                // MARK: 月の選択ヘッダー
                 HStack {
                     Button(action: {
                         if let newMonth = calendar.date(byAdding: .month, value: -1, to: currentMonth) {
@@ -68,7 +68,7 @@ struct CalendarView: View {
                 }
                 .padding()
 
-                // 曜日ヘッダー
+                // MARK: 曜日ヘッダー
                 HStack(spacing: 0) {
                     ForEach(weekdaySymbols, id: \.self) { symbol in
                         Text(symbol)
@@ -84,7 +84,7 @@ struct CalendarView: View {
                 .padding(.horizontal)
                 .padding(.bottom, 8)
 
-                // カレンダーグリッド
+                // MARK: カレンダーグリッド
                 let daysInMonth = getDaysInMonth()
                 let weatherDict = dailyWeatherStorage.weatherDictionary
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 2), count: 7), spacing: 2) {

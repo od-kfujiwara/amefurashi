@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var dailyWeatherStorage = DailyWeatherStorage()
+    @StateObject private var userSettings = UserSettingsStorage()
 
     var body: some View {
         TabView {
@@ -11,6 +12,7 @@ struct ContentView: View {
                     Text("ホーム")
                 }
                 .environmentObject(dailyWeatherStorage)
+                .environmentObject(userSettings)
 
             CalendarView()
                 .tabItem {

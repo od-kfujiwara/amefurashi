@@ -35,7 +35,8 @@ Amefurashi/
 ├── Models/
 │   └── DailyWeatherRecord.swift     # データモデル
 ├── Storage/
-│   └── DailyWeatherStorage.swift    # データ永続化層 + ビジネスロジック
+│   ├── DailyWeatherStorage.swift    # 天気データ永続化層 + ビジネスロジック
+│   └── UserSettingsStorage.swift    # ユーザー設定永続化層
 ├── Utilities/
 │   └── DateFormatters.swift         # 日付フォーマット用ユーティリティ
 └── Assets.xcassets/
@@ -67,12 +68,17 @@ Amefurashi/
   - `DailyWeatherRecord` struct: 日付と天気タイプを保持(`Identifiable`, `Codable`)
 
 #### Storage層
-- **Storage/DailyWeatherStorage.swift**: UserDefaultsを使用した永続化クラス + ビジネスロジック(`ObservableObject`)
+- **Storage/DailyWeatherStorage.swift**: 天気データの永続化クラス + ビジネスロジック(`ObservableObject`)
   - `@Published var dailyRecords`の変更を自動的にUserDefaultsに保存
   - `rainyDayPercentage`: 雨の日の割合を計算
   - `hasRecordForDate()`: 指定日の記録存在チェック
   - `addRecordIfNeeded()`: バリデーション付き記録追加
   - `weatherDictionary`: カレンダー表示用の高速検索辞書（O(1)）
+
+- **Storage/UserSettingsStorage.swift**: ユーザー設定の永続化クラス(`ObservableObject`)
+  - `@Published var username`の変更を自動的にUserDefaultsに保存
+  - デフォルトユーザー名: "風太郎"
+  - HomeView のAlertダイアログで編集可能（最大20文字）
 
 #### Utilities層
 - **Utilities/DateFormatters.swift**: 日付フォーマット用のシングルトンコレクション
