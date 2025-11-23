@@ -118,9 +118,8 @@ struct HomeView: View {
                         let today = calendar.startOfDay(for: currentDate)
                         let newRecord = DailyWeatherRecord(date: today, weatherType: selectedWeather)
 
-                        if dailyWeatherStorage.addRecordIfNeeded(newRecord) {
-                            print("天気登録: \(newRecord)")
-                        }
+                        dailyWeatherStorage.saveOrUpdateRecord(newRecord)
+                        print("天気登録: \(newRecord)")
                     }) {
                         HStack {
                             Image(systemName: "plus")
@@ -139,14 +138,11 @@ struct HomeView: View {
             }
             .navigationTitle("ホーム")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        // TODO: ハンバーガーメニューのアクション
-                    }) {
-                        Image(systemName: "line.horizontal.3")
-                    }
-                }
+            .onChange(of: currentDate) { _, newDate in
+                selectedWeather = dailyWeatherStorage.getWeatherForDate(newDate)
+            }
+            .onAppear {
+                selectedWeather = dailyWeatherStorage.getWeatherForDate(currentDate)
             }
         }
     }

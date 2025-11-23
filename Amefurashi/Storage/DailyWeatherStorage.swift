@@ -63,4 +63,28 @@ class DailyWeatherStorage: ObservableObject {
             (calendar.startOfDay(for: $0.date), $0.weatherType)
         })
     }
+
+    /// 指定日の天気タイプを取得
+    /// - Parameter date: 取得する日付
+    /// - Returns: 登録されている天気タイプ、未登録の場合はnil
+    func getWeatherForDate(_ date: Date) -> WeatherType? {
+        let targetDay = calendar.startOfDay(for: date)
+        return dailyRecords.first { record in
+            calendar.isDate(record.date, inSameDayAs: targetDay)
+        }?.weatherType
+    }
+
+    /// 天気を登録（既存の場合は上書き）
+    /// - Parameter record: 登録する記録
+    func saveOrUpdateRecord(_ record: DailyWeatherRecord) {
+        let targetDay = calendar.startOfDay(for: record.date)
+
+        // 既存の記録を探して削除
+        dailyRecords.removeAll { existingRecord in
+            calendar.isDate(existingRecord.date, inSameDayAs: targetDay)
+        }
+
+        // 新しい記録を追加
+        dailyRecords.append(record)
+    }
 }
