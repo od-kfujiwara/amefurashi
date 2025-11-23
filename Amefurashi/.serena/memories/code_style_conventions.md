@@ -66,5 +66,14 @@ struct SomeView: View {
 - NavigationViewとToolbarの活用
 
 ## File Organization
+- 機能別ディレクトリ構造: App/, Views/, Models/, Storage/, Utilities/
 - 1ファイル = 1主要コンポーネント (例外: 小さな補助構造体は同じファイルに含めてもよい)
 - 関連する型は同じファイルにまとめる (例: `WeatherType` と `DailyWeatherRecord`)
+- 補助ビューコンポーネントは親ビューと同じファイル (例: `WeatherTypeButton` in HomeView.swift, `CalendarDayCell` in CalendarView.swift)
+
+## Architecture Principles
+- **ロジック分離**: ViewはUI表示のみに専念、ビジネスロジックはStorage層に配置
+- **パフォーマンス最適化**: 
+  - DateFormatterはシングルトンパターンで再利用
+  - カレンダー表示ではO(1)辞書検索を使用
+- **レイアウト**: offsetの多用を避け、padding/Spacerで調整（タップ領域とビジュアルの一致）
