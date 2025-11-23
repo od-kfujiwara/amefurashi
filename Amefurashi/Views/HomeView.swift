@@ -65,6 +65,7 @@ struct HomeView: View {
                                 .font(.system(size: 30, weight: .bold))
                                 .foregroundColor(.black)
                         }
+                        .padding(.leading, 30)
                     }
                     .padding(.vertical, 20)
 
