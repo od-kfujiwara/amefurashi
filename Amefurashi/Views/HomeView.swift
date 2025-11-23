@@ -66,6 +66,7 @@ struct HomeView: View {
                                 .foregroundColor(.black)
                         }
                         .padding(.leading, 30)
+                        .offset(y: 10)
                     }
                     .padding(.vertical, 20)
 
@@ -163,7 +164,7 @@ struct WeatherTypeButton: View {
                 // 天気アイコン
                 Image(systemName: weather.iconName)
                     .font(.largeTitle)
-                    .foregroundColor(Color(red: 224/255, green: 81/255, blue: 139/255))
+                    .foregroundColor(weather.color)
                 // 天気ラベル
                 Text(weather.label)
                     .font(.caption)

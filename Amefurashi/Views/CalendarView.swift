@@ -135,7 +135,7 @@ struct CalendarDayCell: View {
             if let weather = weatherType, isInCurrentMonth {
                 Image(systemName: weather.iconName)
                     .font(.system(size: 20))
-                    .foregroundColor(Color(red: 224/255, green: 81/255, blue: 139/255))
+                    .foregroundColor(weather.color)
             } else {
                 Spacer()
                     .frame(height: 20)
